@@ -1,0 +1,139 @@
+{{template "header" "newtable"}}
+<div id="new-table">
+	<h1>new table</h1>
+	<form>
+		<!-- <div class="group">
+			<input class="radio" type="radio" name="type" value="public" checked> <strong>Public table</strong>
+			<span class="hint hint-radio">anyone can view, post</span>
+			<input class="radio" type="radio" name="type" value="anonymous"> <strong>Anonymous table</strong>
+			<span class="hint hint-radio">anyone can view, post - anonymous posts only</span>
+		</div> -->
+
+
+		<div class="group">
+			<label>Name*</label>
+			<div style="position: relative;">
+				<input name="name" placeholder="name" id="form-name"></input>
+				<span id="name-counter" class="counter">20</span>
+			</div>
+			<span class="hint" id="name-hint">only use lowercase letters, numbers and spaces - 20 char max</span>
+		</div>
+		
+		<div class="group">
+			<label>Description*</label>	
+			<div style="position: relative;">
+				<textarea name="description" rows="2" placeholder="description" id="form-description" style="padding-right: 40px;"></textarea>
+				<span id="description-counter" class="counter">100</span>
+			</div>
+			<span class="hint">short description - 100 char max</span>
+		</div>
+		
+		<div class="group">
+			<label>About</label>
+			<textarea name="about" placeholder="about (long description, rules, refrences, etc...)" id="form-about" rows="12"></textarea>
+			<span class="hint" id="toggle-markdown">formatting help</span>
+			<pre class="hide" id="markdown-help">
+only the following formats are supported:
+title: # title
+bold : **bold**
+link : [text](link)
+list : - first
+       - second
+       - third
+		</pre>
+		</div>
+		
+		<div class="group" style="text-align: right;">
+			<div class="error" id="form-errors" style="display: inline-block;
+    margin-right: 13px;"></div>	
+			<button type="button" class="blue-btn" onclick="newTable()">Create</button>
+		</div>
+		
+	</form>
+
+
+<!-- 
+Public Table:
+anyone can view, join
+admins are known
+show up in search results
+
+Anonumous Table:
+anyone can join and view
+posting with anonmous accounts only
+admins are unknown
+show up in search results
+
+joining:
+has anonymous account?
+	yes: join
+	no: message
+
+Restricted Table:
+request based membership
+members only can view
+admins are unknown
+show up in search results
+
+Secret Table:
+invitation only
+admins are unknown
+don't show up in search results
+ -->
+
+
+
+<script type="text/javascript">
+	// autosize($("#form-description"));
+	autosize($("#form-about"))
+    // var namereg = /[a-z0-9 ]+/;
+
+	$("#form-name").on("keyup paste", function() {
+		counter = 20 - this.value.length;
+		$("#name-counter")[0].innerHTML = counter;
+		if (counter < 0) {
+			$("#name-counter")[0].classList.add("error")
+		}else{
+			$("#name-counter")[0].classList.remove("error")
+		}
+	});
+
+
+	$("#form-description").on("keyup paste", function() {
+		counter = 100 - this.value.length;
+		$("#description-counter")[0].innerHTML = counter;
+		if (counter < 0) {
+			$("#description-counter")[0].classList.add("error")
+		}else{
+			$("#description-counter")[0].classList.remove("error")
+		}
+	});
+
+
+	// TODO: check avalibility
+
+
+	$("#toggle-markdown").on("click", function() {
+		if ($("#markdown-help")[0].classList.contains("hide")) {
+			$("#markdown-help")[0].classList.remove("hide");
+			this.innerHTML = "hide help";
+		}else{
+			$("#markdown-help")[0].classList.add("hide");
+			this.innerHTML = "formatting help";
+		}
+	});
+
+
+	function newTable(){
+		$.post( "/t/new", $("form").serialize())
+			  .done(function(data) {
+			  	window.location.href = "/t/" + data.message;
+			  })
+			  .fail(function(data) {
+			  	$("#form-errors")[0].innerHTML = data.responseJSON.message;
+			  });
+	}
+
+</script>
+</div>
+{{template "footer"}}

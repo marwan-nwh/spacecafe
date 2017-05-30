@@ -1,0 +1,142 @@
+{{template "header" "profile-complete"}}
+<h1>Complete your profile</h1>
+<p style="text-align: center; color: #666;    margin-top: 8px;
+    margin-bottom: 20px;">Spacecafe provide additional identity to allow users to post as anonymous<br />
+Select images for your real identity, anonymous identity and also a name for your anonymous identity
+</p>
+<form enctype="multipart/form-data" action="/users/images" method="post">
+	<!-- <div class="group">
+      <input type="file" name="img" />
+	</div> -->
+	<!-- Anonymous identity -->
+	<div class="group" style="width: 210px; display: inline-block;">
+		<div class="container img-selector">
+		    <div class="imageBox" id="realImageBox">
+		        <div class="thumbBox" id="realThumbBox"></div>
+		        <div class="spinner" id="realSpinner">Image for <br /><strong>real identity</strong>
+                <span class="inst">Click and Drag to move<br />Scroll to zoom in/out</span>
+                </div>
+		    </div>
+		    <div class="action">
+		    	<div class="group">
+		    		<div class="blue-btn img-input-cover">Select Image</div>
+		        	<input class="img-input" type="file" accept="image/png,image/jpeg" id="realFile">
+		    	</div>
+		    </div>
+		</div>
+	</div>
+    <div class="group" style="width: 210px; margin-left: 30px; display: inline-block;">
+        <div class="container img-selector">
+            <div class="imageBox" id="anonymousImageBox">
+                <div class="thumbBox" id="anonymousThumbBox"></div>
+                <div class="spinner" id="anonymousSpinner">Image for <br /><strong>anonymous identity</strong>
+                    <span class="inst">Click and Drag to move<br />Scroll to zoom in/out</span>
+                </div>
+            </div>
+            <div class="action">
+                <div class="group">
+                    <div class="blue-btn img-input-cover">Select Image</div>
+                    <input class="img-input" type="file" accept="image/png,image/jpeg" id="anonymousFile">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="group">
+        <div style="position: relative;">
+            <label>Anonymous identity name:</label>
+            <input name="anonymous_name" placeholder="name" id="anonymous-name"></input>
+            <!-- <span id="name-counter" class="counter">20</span> -->
+        </div>
+        <span class="hint" style="color: #999;" id="name-hint">ex: Batman, Fish. default is 'Anonymous'.</span>
+    </div>
+	<div class="group" style="width: 100%; text-align: center; margin-top: 30px;">
+      <button id="upload-btn" class="blue-btn" type="button" style="padding: 7px 42px;
+    font-size: 14px;">Save and Continue</button>
+      <!-- <input type="submit" value="upload" /> -->
+	</div>
+      <!-- <input type="hidden" name="token" value="{{.}}"/> -->
+</form>
+
+<script type="text/javascript" src="/static/js/cropbox-min.js"></script>
+<script type="text/javascript">
+	// $(function(){
+	// 	$('#image-cropper').cropit(
+	// 		{
+	// 			allowDragNDrop:false,
+	// 			imageBackground: true,
+	// 			imageBackgroundBorderWidth: 60
+	// 		})})
+</script>
+
+
+<script type="text/javascript">
+    $(function() {
+        var options =
+        {
+            thumbBox: '#realThumbBox',
+            spinner: '#realSpinner'
+        }
+        var realCropper = $('#realImageBox').cropbox(options);
+        // var realImgType;
+        $('#realFile').on('change', function(){
+            var realReader = new FileReader();
+            realReader.onload = function(e) {
+                options.imgSrc = e.target.result;
+                realCropper = $('#realImageBox').cropbox(options);
+            }
+            realReader.readAsDataURL(this.files[0]);
+            // this.files = [];
+        })
+        
+
+        var anonymousOptions =
+        {
+            thumbBox: '#anonymousThumbBox',
+            spinner: '#anonymousSpinner'
+        }
+        var anonymousCropper = $('#anonymousImageBox').cropbox(anonymousOptions);
+        $('#anonymousFile').on('change', function(){
+            var anonymousReader = new FileReader();
+            anonymousReader.onload = function(e) {
+                anonymousOptions.imgSrc = e.target.result;
+                anonymousCropper = $('#anonymousImageBox').cropbox(anonymousOptions);
+            }
+            anonymousReader.readAsDataURL(this.files[0]);
+            // this.files = [];
+        })
+
+
+        $("#upload-btn").on('click', function(){
+            var data = new FormData();
+            data.append('anonymous_name', $("#anonymous-name")[0].value);
+            data.append('real_img', realCropper.getDataURL());
+            data.append('anonymous_img', anonymousCropper.getDataURL());
+            $.ajax({
+                url: '/users/images',
+                type: 'post',
+                data: data,
+                cache:false,
+                processData:false,
+                contentType:false,
+                done: function () {
+                    window.location.href = "/";
+                }
+            });
+        })
+
+
+        // TODO: Errors
+        // TODO: hide notification when clicking on posting area
+
+        // TODO: check for png and jpeg support
+        // TODO: don't show page for who has completed profile
+        // $('#btnZoomIn').on('click', function(){
+        //     cropper.zoomIn();
+        // })
+        // $('#btnZoomOut').on('click', function(){
+        //     cropper.zoomOut();
+        // })
+    });
+</script>
+
+{{template "footer"}}

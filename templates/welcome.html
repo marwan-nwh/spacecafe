@@ -1,0 +1,84 @@
+{{template "header" "welcome"}}
+<div id="welcome">
+	<div class="desc">
+		<p class="big">A different taste of internet communities</p>
+		<!-- <p class="big">People, not content.</p> -->
+		<p class="small">a text-only social network, for connecting people with similar interests and following news</p>
+		<!-- <p class="small">if twitter has groups, with reddit comments</p> -->
+	</div>
+
+	<div class="info">
+		<p>What is it?</p>
+		<p>A text-only community network, for connecting people with similar interests and following news</p>
+		<p>Light posts (160 char), with threaded comments for heavy discussions. weird combination yeah, but you will love it.</p>
+		<p>Tables can subscribe to rss/atom feeds to get updates posted automatically on the table</p>
+		<p>Real and anonymous identities for users</p>
+		<p>25 tables only, you can't join more than that. so choose the ones you really like.</p>
+	</div>
+
+	<div class="signup">
+		<form id="signup-form">
+			<h3>Signup</h3>
+			<input id="signup-name" placeholder="Name" type="text" name="name"></input>
+			<input id="signup-email" placeholder="Email" type="email" name="email"></input>
+			<input id="signup-pass" placeholder="Password" type="password" name="password"></input>
+			<button id="signup-button" type="button" onclick="signup()">Signup</button>
+			<span id="signup-error"></span>
+		</form>
+	</div>
+</div>
+
+	<script type="text/javascript">
+		// function login(){
+		// 	$.post( "/login", $("#login-form").serialize())
+		// 	  .done(function(data) {
+		// 	   cookies.set('token', data.token, Infinity);
+  //       	   cookies.set('id', data.user_id, Infinity);
+  //       	   cookies.set("name", data.user_name, Infinity);
+		//        window.location.href = "/";
+		// 	  })
+		// 	  .fail(function() {
+		// 	  	// TODO: show error
+		// 	  });
+		// }
+		// TODO: signup
+
+
+
+		function signup(){
+			// TODO: disable button / re-enable
+			// show loading image
+			$("#signup-button")[0].classList.add("disabled");
+			$.post( "/signup", $("#signup-form").serialize())
+			  .done(function(data) {
+				   cookies.set('token', data.token, Infinity);
+	        	   cookies.set('id', data.user_id, Infinity);
+	        	   cookies.set("name", data.user_name, Infinity);
+			       window.location.href = "/profile/complete";
+			  })
+			  .fail(function(data) {
+			  	console.log(data)
+			  	$("#signup-error")[0].innerHTML = data.responseJSON.message;
+			  	$("#signup-error")[0].classList.remove("hide")
+			  });
+		}
+
+
+
+		$(function() {
+			$("#signup-name").on("keyup paste", function() {
+				$("#signup-error")[0].classList.add("hide");
+				$("#signup-button")[0].classList.remove("disabled");
+			});
+			$("#signup-email").on("keyup paste", function() {
+				$("#signup-error")[0].classList.add("hide");
+				$("#signup-button")[0].classList.remove("disabled");
+			});
+			$("#signup-pass").on("keyup paste", function() {
+				$("#signup-error")[0].classList.add("hide");
+				$("#signup-button")[0].classList.remove("disabled");
+			});
+		});
+
+	</script>
+{{template "footer"}}

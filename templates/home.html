@@ -1,0 +1,547 @@
+{{template "header" "home"}}
+<div id="home-pg">
+	<div class="navigator">
+		<div class="title"><span>Tables</span></div>
+		<div style="padding-right: 3px;">
+			<ul class="tables scrollbar-macosx hidden" id="navigator-tables">
+					<li class="table active" id="t-overview" onclick='showPreview()'>Overview</li>
+				{{range .Tables}}
+				<li id="t-{{.Name}}" onclick='changeTable({{.Name}}, {{.Role}})'>
+					<a class="table" href="#{{.Name}}">{{spaced .Name}}</a>
+				</li>
+				{{end}}
+			</ul>
+		</div>
+	</div>
+
+	<div class="content" style="width: 700px" id="overview">
+		<div class="tabs-nav">
+			<div class="left">
+				<span class="tab active">Overview</span>
+				<span style="font-style: italic;">quick overview of your tables, and new tables</span>
+			</div>
+			<div class="right">
+				<span style="margin: 0;"><img class="ov-img" src="https://s3.amazonaws.com/spacecafe-users/{{.User.Id}}_44.png"></span>
+				<span style="font-weight: bold; ">{{.User.Name}}</span>
+			</div>
+		</div>
+		{{range .Tables}}
+		<div class="tcard" onclick="changeTable('{{.Name}}')">
+			<div class="tcard-head">
+				<span class="tcard-name">{{spaced .Name}}</span>
+				<span class="tcard-type">{{.Type}}</span>
+			</div>
+			<div class="tcard-desc">
+			{{if .Description}} {{.Description}} {{else}} <span style="color: #999;">no description</span> {{end}}
+			</div>
+			<div class="tcard-meta">
+				<ul>
+					<li>members: <strong>{{.Members}}</strong></li>
+					<li>posts: <strong>{{if eq .Posts 0}}no posts yet{{else}}{{.Posts}}{{end}}</strong></li>
+					<li style="display: none;">active rate: 
+					<strong>{{if eq .Posts 0}}no posts yet{{else}}{{floatToInt .ActiveRate | printf "%d per post"}}{{end}}</strong></li>
+					<li>news sources: <strong>{{if eq .Feeds 0}}no sources{{else}}{{.Feeds}}{{end}}</strong></li>
+				</ul>
+			</div>
+		</div>
+		{{end}}
+	</div>
+
+	<div class="content hide" id="tables-content">
+		<div class="tabs-nav">
+			<div class="left">
+				<span class="tab active" id="current-table"></span>
+				<span class="feeds">feeds</span>
+				<span style="height: 9px;
+    margin-bottom: -1px;
+    width: 1px;
+    background: #ddd;
+    display: inline-block;
+    margin-left: 3px;"></span>
+				<span style="margin-left: 3px;" class="about">about</span>
+			</div>
+			<div class="right" style="margin-top: 2px;">
+				<span onclick="changeSort('top')" id="sort-top" class="_sort active">Top</span>
+				<span onclick="changeSort('latest')" id="sort-latest" class="_sort">Latest</span>
+				<!-- <span>Conterversial</span> -->
+			</div>
+		</div>
+
+		<div class="post-form" id="post-form">
+			<div class="real-identity identity">
+				<img class="usr" src="https://s3.amazonaws.com/spacecafe-users/{{.User.Id}}_44.png">
+				<img onclick="postAnonymous()" class="usr-small" src="https://s3.amazonaws.com/spacecafe-users/{{.User.Nimg}}.png">
+			</div>
+
+			<div class="anonymous-identity identity hide">
+				<img class="usr" src="https://s3.amazonaws.com/spacecafe-users/{{.User.Nimg}}.png">
+				<img onclick="postReal()" class="usr-small" src="https://s3.amazonaws.com/spacecafe-users/{{.User.Id}}_44.png">
+			</div>
+
+			<form>
+				<input class="identity-flag" type="hidden" name="identity" value="real"></input>
+				<textarea id="post-area" onclick="Posts.growTextArea('post-area')" rows="1" name="body" placeholder="Share something with the table"></textarea>
+				<span id="name-counter" class="counter" style="top: 5px;color: #999;">160</span>
+				<div class="hide" id="post-area-ctrl">
+					<span class="hint posting-identity-hint"></span>
+					<button type="button" class="blue-btn" onclick="post()">Post</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- <div id="stream-wrapper"> -->
+			<div class="stream" id="stream">
+				
+			</div>	
+			<!-- <div id="stream-footer">
+				Loading...
+			</div> -->
+		<!-- </div> -->
+
+		<div id="show-post" class="hide">
+			<span onclick="backToStream()" id="back-to-stream"></span>
+			<div id="show-post-box"></div>
+			
+			<div class="post-form" id="comment-form">
+				<div class="real-identity identity">
+				<img class="usr" src="/static/img/15.jpg">
+				<img onclick="postAnonymous()" class="usr-small" src="/static/img/2.jpg">
+			</div>
+
+			<div class="anonymous-identity identity hide">
+				<img class="usr" src="/static/img/2.jpg">
+				<img onclick="postReal()" class="usr-small" src="/static/img/15.jpg">
+			</div>
+
+			<div class="anonymous-only identity hide">
+				<img class="usr" src="/static/img/15.jpg">
+				<img style="cursor: default;opacity: 0.5" class="usr-small" src="/static/img/2.jpg">
+			</div>
+
+				<form>
+					<textarea id="comment-area" onclick="Posts.growTextArea('comment-area')" rows="1" name="body" placeholder="Write a comment..."></textarea>
+					<div class="hide" id="comment-area-ctrl">
+						<span class="hint posting-identity-hint">Posting as {{.User.Name}}</span>
+						<button class="blue-btn" type="button" onclick="comments.new()">Post</button>
+					</div>
+				</form>
+			</div>
+				
+
+			 <div class="post-form hide" id="reply-form">
+				<div class="real-identity identity">
+					<img class="usr" src="/static/img/15.jpg">
+					<img onclick="postAnonymous()" class="usr-small" src="/static/img/2.jpg">
+				</div>
+
+				<div class="anonymous-identity identity hide">
+					<img class="usr" src="/static/img/2.jpg">
+					<img onclick="postReal()" class="usr-small" src="/static/img/15.jpg">
+				</div>
+
+				<div class="anonymous-only identity hide">
+					<img class="usr" src="/static/img/15.jpg">
+					<img style="cursor: default;opacity: 0.5" class="usr-small" src="/static/img/2.jpg">
+				</div>
+
+				<form>
+					<textarea id="reply-area" onclick="Posts.growTextArea('reply-area')" rows="1" name="body" placeholder="Write a reply..."></textarea>
+					<div class="hide" id="reply-area-ctrl">
+						<span class="hint posting-identity-hint">Posting as {{.User.Name}}</span>
+						<button class="blue-btn" type="button" onclick="reply()">Post</button>
+					</div>
+				</form>
+			</div>
+
+			<div id="comments">
+				<div class="_mode">
+					<span class="_title">Reading Mode:</span>
+					<span class="_ctrl" onclick='comments.changeMode("levels")'>one by one</span>
+					<span class="_ctrl" onclick='comments.changeMode("tree")'>tree</span>
+				</div>
+
+				<div id="comments-wrapper"></div>
+			</div>
+
+
+		</div>
+	</div>
+</div>
+
+
+
+
+<script type="text/javascript">
+	var currentTable = "overview";
+	// const fetchPostscount = 20;
+	// var lastPostCount = fetchPostscount;
+	// var freezeStream = false;
+	var scrollPostion;
+	var replyingToId;
+	var replyingToDepth;
+	var posts = {};
+	posts.sorting = 'top';
+	posts.identity = 'real';
+
+	var postsStream;
+	
+
+	function setPostingHint(i){
+    	if (i == "real") {
+    		$(".posting-identity-hint").text("Posting as " + cookies.get("name")+". Change identity by clicking the small image on the left.")
+    	}else{
+    		$(".posting-identity-hint").text("Posting as Anonymous.")
+    	}
+    }
+
+
+	function showPreview(){
+		$("#t-"+currentTable).get(0).classList.remove("active");
+		$("#t-overview").get(0).classList.add("active");
+		$("#tables-content")[0].classList.add("hide")
+		currentTable = "overview";
+		// $("#current-table").get(0).innerHTML = "Overview";
+		$("#overview")[0].classList.remove("hide")
+	}
+
+	function backToStream(){
+		// freezeStream = false;
+		postsStream.unfreeze();
+		$("#show-post")[0].classList.add("hide")
+		$("#stream")[0].classList.remove("hide")
+		$(".navigator").show();
+		$("#post-form")[0].classList.remove("hide")
+		$(window).scrollTop(scrollPosition);
+		$("#show-post-box").empty()
+		Posts.shrinkTextArea("comment-area")
+		Posts.shrinkTextArea("reply-area")
+		// append reply-form to show-port before clearing the comments-wrapper
+		// incase the reply-form is in it, so it don't get deleted with it's content
+		$("#show-post").append($("#reply-form"))
+		$("#comments-wrapper").empty()
+		comments.clearMaps();
+	}
+
+
+	function showPost(id, commentsCount){
+		// freezeStream = true;
+		postsStream.freeze();
+		comments.postId = id;
+		scrollPosition = $(window).scrollTop();
+		$("#stream")[0].classList.add("hide")
+		$(".navigator").hide();
+		$("#post-form")[0].classList.add("hide")	
+		$("#show-post-box").prepend($(".post-"+id).clone()[0])
+		$("#show-post")[0].classList.remove("hide")
+		comments.fetch()
+	}
+
+
+	function showReplyForm(id, depth){
+		event.stopPropagation();
+		replyingToId = id;
+		replyingToDepth = depth;
+		$("#comment-reply-area-"+id).append($("#reply-form"))
+		$("#reply-form")[0].classList.remove("hide")
+	}
+
+
+	function postAnonymous() {
+		posts.identity = 'anonymous';
+		setPostingHint("anonymous")
+		$(".identity").addClass("hide")
+		$(".anonymous-identity").removeClass("hide")
+		$(".identity-flag").val("n")
+	}
+
+
+	function postReal() {
+		posts.identity = 'real';
+		setPostingHint("real")
+		$(".identity").addClass("hide")
+		$(".real-identity").removeClass("hide")
+		$(".identity-flag").val("r")
+	}
+
+	// https://tylercipriani.com/blog/2014/07/12/crossbrowser-javascript-scrollbar-detection/
+	// var hasScrollbar = function() {
+	//   // The Modern solution
+	//   if (typeof window.innerWidth === 'number')
+	//     return window.innerWidth > document.documentElement.clientWidth
+
+	//   // rootElem for quirksmode
+	//   var rootElem = document.documentElement || document.body
+
+	//   // Check overflow style property on body for fauxscrollbars
+	//   var overflowStyle
+
+	//   if (typeof rootElem.currentStyle !== 'undefined')
+	//     overflowStyle = rootElem.currentStyle.overflow
+
+	//   overflowStyle = overflowStyle || window.getComputedStyle(rootElem, '').overflow
+
+	//     // Also need to check the Y axis overflow
+	//   var overflowYStyle
+
+	//   if (typeof rootElem.currentStyle !== 'undefined')
+	//     overflowYStyle = rootElem.currentStyle.overflowY
+
+	//   overflowYStyle = overflowYStyle || window.getComputedStyle(rootElem, '').overflowY
+
+	//   var contentOverflows = rootElem.scrollHeight > rootElem.clientHeight
+	//   var overflowShown    = /^(visible|auto)$/.test(overflowStyle) || /^(visible|auto)$/.test(overflowYStyle)
+	//   var alwaysShowScroll = overflowStyle === 'scroll' || overflowYStyle === 'scroll'
+
+	//   return (contentOverflows && overflowShown) || (alwaysShowScroll)
+	// }
+
+
+	function togglePostLike(postId){
+		if ($(".post-"+postId)[0].classList.contains("liked")) {
+			$.post( "/posts/unlike", {post_id: postId})
+			$(".post-"+postId).removeClass("liked")
+			return;
+		}
+    	$.post( "/posts/like", {post_id: postId})
+		$(".post-"+postId).addClass("liked")
+	}
+
+	// $(window).scroll(function(){
+ //            if  ($(window).scrollTop() == $(document).height() - $(window).height()){
+ //                  if (lastPostCount == fetchPostscount) {
+ //                  	loadPosts();
+ //                  }
+ //            }
+ //    }); 
+
+    function _changeSort(sorting){
+    	if (sorting == 'latest') {
+    		$("#sort-top").removeClass("active");
+    		$("#sort-latest").addClass("active");
+    	}else{
+    		$("#sort-latest").removeClass("active");
+    		$("#sort-top").addClass("active");
+    	}
+		// $("#stream").empty();
+		posts.sorting = sorting;
+	}
+
+	function changeSort(sorting){
+		_changeSort(sorting)
+		// loadPosts();
+	}
+
+    // function loadPosts(){
+    // 	if (freezeStream) {return;}
+    // 	$.post( "/posts", {table: currentTable, sorting: posts.sorting})
+		  // .done(function(data, status, request) {
+		  // 	if (!data) {
+    //    	 		return;
+    //   		}
+		  // 	lastPostCount = data.length;
+		  // 	_posts = '';
+		  // 	for (var i = 0; i < data.length; i++) {
+		  // 		_posts = _posts + Posts.getNode(data[i])	
+		  // 	}
+		  // 	$("#stream").append(_posts)
+
+		  // 	if (request.getResponseHeader('Notifications') > notifications.unread) {
+		  // 		notifications.unread = request.getResponseHeader('Notifications');
+		  // 		notifications.updateUnread(request.getResponseHeader('Notifications'))
+		  // 		// notifications.check();
+		  // 	}
+		  // })
+		  // .fail(function(data) {
+		  // 	// console.log(data)
+		  // });
+    // }
+
+	function changeTable(table, role) {
+		if (currentTable == table) {return;}
+		$("#overview")[0].classList.add("hide")
+		$("#tables-content")[0].classList.remove("hide")
+		$("#current-table").get(0).innerHTML = table.replace(/_/g, " ");
+		$("#t-"+currentTable).get(0).classList.remove("active");
+		$("#t-"+table).get(0).classList.add("active");
+		_changeSort('top')
+		currentTable = table;
+		// freezeStream = false;
+		postsStream.unfreeze();
+
+		postReal()
+		
+		$("#show-post")[0].classList.add("hide")
+		$("#stream")[0].classList.remove("hide")
+		$("#post-form")[0].classList.remove("hide")
+		$("#show-post-box").empty()
+		Posts.shrinkTextArea("comment-area")
+		Posts.shrinkTextArea("reply-area")
+		// append reply-form to show-port before clearing the comments-wrapper
+		// incase the reply-form is in it, so it don't get deleted with it's content
+		$("#show-post").append($("#reply-form"))
+		$("#comments-wrapper").empty()
+		comments.clearMaps();
+
+		postsStream.changeParams({table: currentTable})
+	}
+	
+	// function growPostArea(id){
+	// 	area = $('#'+id).get(0)
+	// 	if (area.attributes["rows"] > 1) {return;}
+	// 	area.setAttribute("rows", 2);
+	// 	autosize(area);
+	// 	area.classList.add("light-placeholder");
+	// 	ctrl = $("#"+id+"-ctrl").get(0)
+	// 	ctrl.classList.remove("hide");
+	// }
+
+	// function shrinkPostArea(id){
+	// 	area = $('#'+id).get(0)
+	// 	area.value = "";
+	// 	autosize.destroy(area);
+	// 	area.setAttribute("rows", 1);
+	// 	area.classList.remove("light-placeholder");
+	// 	ctrl = $("#"+id+"-ctrl").get(0);
+	// 	ctrl.classList.add("hide");
+	// }
+
+	// function post(){
+	// 	if (postSpace() < 0) {return;}
+	// 	$.post( "/posts/new", {body: $("#post-area")[0].value, table: currentTable})
+	// 	  .done(function(data) {
+	// 	  	$("#stream").prepend(Posts.getNode(data))
+	// 	  	})
+	// 	  .fail(function(data) {
+	// 		// TODO
+	// 	  });
+	// 	Posts.shrinkTextArea("post-area")
+	// }
+
+
+	function post() {
+	  if (postSpace() < 0) {
+	    return;
+	  }
+	  $.post("/posts/new", {
+	    body: $("#post-area")[0].value,
+	    table: currentTable,
+	    identity: posts.identity
+	  })
+	    .done(function(data) {
+	      // $("#stream").prepend(Posts.getNode(data))
+	      $("#name-counter")[0].innerHTML = 160;
+	    })
+	    .fail(function(data) {
+	      // TODO
+	    });
+	  Posts.shrinkTextArea("post-area")
+	}
+
+
+	
+	// function comment(){
+	// 	$.post( "/comments/new", {body: $("#comment-area")[0].value, parent_id: "p:"+comments.postId})
+	// 	  .done(function(data) {
+	// 		Posts.shrinkTextArea("comment-area")
+	// 	  	data.depth = 0;
+	// 	  	$("#comments-wrapper").prepend(comments.getCommentNode(data))
+	// 	  	})
+	// 	  .fail(function(data) {
+	// 	  	console.log(data)
+	// 	  });
+	// }
+
+
+	function reply(){
+		$.post( "/comments/new", {body: $("#reply-area")[0].value, parent_id: replyingToId})
+		  .done(function(data) {
+		  	$("#reply-form")[0].classList.add("hide")
+		  	data.depth = replyingToDepth + 1;
+		  	c = comments.getCommentNode(data)
+		  	c = c + '<div class="comment-childern hide" id="comment-childern-'+data.id+'"></div>'
+		  	$("#comment-childern-"+replyingToId).prepend(c)
+		  	$("#comment-childern-"+replyingToId).removeClass("hide")
+			Posts.shrinkTextArea("reply-area")
+		  	})
+		  .fail(function(data) {
+		  	console.log(data)
+			// TODO
+		  });
+	} 
+
+	$(window).click(function() {
+		parea = $('#post-area').get(0)
+		carea = $('#comment-area').get(0)
+		rarea = $('#reply-area').get(0)
+		if (parea.value == "") {Posts.shrinkTextArea("post-area");}
+		if (carea.value == "") {Posts.shrinkTextArea("comment-area");}
+		if (rarea.value == "") {$("#reply-form")[0].classList.add("hide")}
+			// console.log("window")
+	});
+
+	$(function(){
+    	$('#navigator-tables').scrollbar({disableBodyScroll: true, onInit:function(){
+    		$('.scrollbar-macosx').removeClass("hidden");
+    	}});
+
+    	setPostingHint("real");
+  		// loadPosts();
+
+  		postsStream = new Stream("stream", {
+  			URI: "/posts",
+  			params: {table: currentTable, sorting: posts.sorting},
+    		loadCount: 5,
+    		nodeCreator: Posts.getNode,
+    		// beforeLoad: function() {},
+    		// afterLoad: function() {},
+    		// onFail: function() {}
+  		})
+	});
+
+    var re = /((https?|ftp):\/\/|www\.)[^\s/$.?#].[^\s]*/gi;
+    var u = new RegExp(re);
+
+    function postSpace(){
+    	v = $("#post-area")[0].value
+    	m = v.match(u);
+	    x = 0; // x is the length of text that will be cutted from urls
+	    if (m) {	
+		    for (var i = 0; i < m.length; i++) {
+		    	l = m[i].trim().length
+		    	if (l > 27){
+		    		x = x + (l - 30)
+		    	}
+		    }
+	    }
+    
+		return 160 - v.length + x;
+    }
+
+    $("#post-area").on("keyup paste", function() {
+		counter = postSpace();		
+		$("#name-counter")[0].innerHTML = counter;
+		if (counter < 0) {
+			$("#name-counter")[0].classList.add("error")
+		}else{
+			$("#name-counter")[0].classList.remove("error")
+		}
+	});
+
+	$('#post-area').click(function(event){
+	    event.stopPropagation();
+	});
+	$('#comment-area').click(function(event){
+	    event.stopPropagation();
+	});
+	$('#reply-area').click(function(event){
+	    event.stopPropagation();
+	});
+	$('.identity').click(function(event){
+	    event.stopPropagation();
+	});
+	// $('.action').click(function(event){
+	// 	// console.log("action")
+	//     event.stopPropagation();
+	// });
+</script>
+{{template "footer"}}

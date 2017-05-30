@@ -1,0 +1,18 @@
+Your Agent has started up for the first time. We're currently verifying that
+data is being submitted. You should see your Agent show up in Datadog shortly
+at:
+
+    https://app.datadoghq.com/infrastructure
+
+Waiting for metrics.................................
+
+Your Agent is running and functioning properly. It will continue to run in the
+background and submit metrics to Datadog.
+
+If you ever want to stop the Agent, run:
+
+    sudo /etc/init.d/datadog-agent stop
+
+And to run it again run:
+
+    sudo /etc/init.d/datadog-agent start

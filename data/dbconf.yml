@@ -1,0 +1,7 @@
+development:
+    driver: postgres
+    open: user=postgres password=pass dbname=spacecafe sslmode=disable port=5432
+
+production:
+    driver: postgres
+    open: user=spacecafe host=spacecafe-test.c1woibcsxv8q.us-west-2.rds.amazonaws.com password='3vSTX7uXaQXnQszdX33PYrmHcYsunyeKnYAK7C8Wt4EvQdERwRKEzs9E92UbtrEHF5PMvzcKW3KtPnULJMGwL9HkYAZyCWPFgTqcXtNgspDfgps6tBSV9yPyspfeaGxm' dbname=spacecafe port=5432

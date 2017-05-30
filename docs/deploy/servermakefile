@@ -1,0 +1,7 @@
+all:
+        cp -r ../stage/* ../production
+        cp spacecafe /usr/local/go/bin
+        cp redis.conf /usr/local/redis
+        goose -env production up
+        # redis-server --daemonize yes
+        spacecafe

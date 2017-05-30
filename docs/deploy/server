@@ -1,0 +1,64 @@
+$ chmod 600 path/to/mykey.pem
+$ ssh -i path/to/mykey.pem root@ec2-X-X-X.compute-X.amazonaws.com
+
+sudo apt-get install build-essential
+
+
+# Install Go
+sudo curl -O https://storage.googleapis.com/golang/go1.7.3.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.7.3.linux-amd64.tar.gz
+nano ~/.profile
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+source ~/.profile
+
+# Install Redis
+wget http://download.redis.io/releases/redis-3.2.5.tar.gz
+tar xzf redis-3.2.5.tar.gz
+cd redis-3.2.5
+make
+
+https://redis.io/topics/quickstart
+
+ubuntu@ip-172-31-34-250:~/redis-3.2.5/src$ sudo cp redis-server redis-cli redis-benchmark /usr/local/bin/
+
+
+# Install Postgresql
+https://raonyguimaraes.com/how-to-install-postgresql-9-6-on-ubuntudebianlinux-mint/
+
+
+Once connected, update and upgrade the Ubuntu packages on your server. This ensures that you have the latest security patches and fixes, as well as updated repos for your new packages.
+
+sudo apt-get update
+sudo apt-get -y upgrade
+
+
+#INSTALL POSTGRESQL
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04
+https://help.ubuntu.com/community/PostgreSQL
+
+#LOCAL VERSIONS
+Go 1.5.3
+Postgresql 9.3.10
+
+
+#SERVER VERSIONS
+Go 1.5.3
+Postgresql 9.3.12
+
+
+
+#PROBLEMS
+----------------------------------------
+a locale warning from Perl  http://stackoverflow.com/questions/2499794/how-can-i-fix-a-locale-warning-from-perl
+Add the following lines to your .profile on the host machine:
+
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8 	
+
+then
+$ source ~/.profile
+----------------------------------------
+http://dba.stackexchange.com/questions/50906/why-wont-postgresql-9-3-start-on-ubuntu
+http://dba.stackexchange.com/a/108563

@@ -1,0 +1,147 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<head>
+	<title>Spacecafe</title>
+
+	<!-- Styles -->
+	<link rel="stylesheet" type="text/css" href="/static/css/normalize.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/common.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/comments.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/scrollbar.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/cropbox.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/cropper.min.css">
+
+	<!-- Libraries -->
+	<!-- <script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script> -->
+	<!-- <script type="text/javascript" src="/static/js/jquery-1.11.1.min.js"></script> -->
+	<script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="/static/js/autosize.min.js"></script>
+	<script type="text/javascript" src="/static/js/cookies.js"></script>
+	<script type="text/javascript" src="/static/js/timeago.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.scrollbar.min.js"></script>
+	<script type="text/javascript" src="/static/js/bootstrap-dropdown.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.visible.min.js"></script>
+	
+	<!-- App Modules -->
+	<script type="text/javascript" src="/static/js/modules/errors.js"></script>
+	<script type="text/javascript" src="/static/js/modules/posts.js"></script>
+	<script type="text/javascript" src="/static/js/modules/comments.js"></script>
+	<script type="text/javascript" src="/static/js/modules/notifications.js"></script>
+	<script type="text/javascript" src="/static/js/modules/tables.js"></script>
+	<script type="text/javascript" src="/static/js/modules/stream.js"></script>
+	
+	<script type="text/javascript">
+		 timeago.register('en', function(number, index) {
+		  return [
+		    ['just now', 'right now'],
+		    ['%ss', 'in %ss'],
+		    ['1m', 'in 1m'],
+		    ['%sm', 'in %sm'],
+		    ['1h', 'in 1h'],
+		    ['%sh', 'in %sh'],
+		    ['1d', 'in 1d'],
+		    ['%sd', 'in %sd'],
+		    ['1w', 'in 1w'],
+		    ['%sw', 'in %sw'],
+		    ['1mo', 'in 1mo'],
+		    ['%smo', 'in %smo'],
+		    ['1yr', 'in 1yr'],
+		    ['%syr', 'in %syr']
+		  ][index];
+		})
+		// timeago.register('en', locale);
+		var ago = timeago();
+	</script>
+	<script type="text/javascript">
+		function login(){
+			// TODO: disable button / re-enable
+			// show loading image
+			$("#login-button")[0].classList.add("disabled");
+			$.post( "/login", $("#login-form").serialize())
+			  .done(function(data) {
+			   cookies.set('token', data.token, Infinity);
+        	   cookies.set('id', data.user_id, Infinity);
+        	   cookies.set("name", data.user_name, Infinity);
+		       window.location.href = "/";
+			  })
+			  .fail(function() {
+			  	$("#login-error")[0].classList.remove("hide")
+			  });
+		}
+
+
+
+		$(function() {
+			$("#login-email").on("keyup paste", function() {
+				$("#login-error")[0].classList.add("hide");
+				$("#login-button")[0].classList.remove("disabled");
+			});
+			$("#login-pass").on("keyup paste", function() {
+				$("#login-error")[0].classList.add("hide");
+				$("#login-button")[0].classList.remove("disabled");
+			});
+		});
+
+
+
+		function logout(){
+		   $.post( "/logout")
+		   cookies.del('token');
+    	   cookies.del('id');
+    	   cookies.del("name");
+	       window.location.href = "/";
+		}
+	</script>
+
+	<!-- <link href="https://fonts.googleapis.com/css?family=Amaranth:700|Dhurjati|Khula:800|Lato:900|Passion+One:400,700,900|Paytone+One|Source+Sans+Pro:900|Viga" rel="stylesheet"> -->
+</head>
+<body class="{{.}}-page">
+<header>
+	<div class="wrapper">
+		<span class="logo"><span>space</span>cafe</span>
+		<ul class='nav-main {{if eq . "welcome"}}hide{{end}}'>
+		 	<li class='{{if eq . "home"}}active{{end}}'><a href="/">home</a></li>
+		 	<li class='{{if eq . "explore"}}active{{end}}'><a href="/explore">explore</a></li>
+		 	<!-- <li class='{{if eq . "newtable"}}active{{end}}'><a href="/t/new">new table</a></li> -->
+		 	<li id="notifications-menu">
+		 		<div class="dropdown" id="notifications-dropdown">
+				  	<button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    replies
+				    	<span id="notifications-counter"></span>
+				  	</button>
+				  	<div class="dropdown-menu" aria-labelledby="dLabel">
+				  	<div class="_header">
+				  		<span class="_title">Notifications</span>
+				  		<span class="_ctrl"><span>Mark all as read</span></span>
+				  	</div>
+				  		<div class="scrollbar-macosx" id="notifications">
+				  			
+				  		</div>
+				  	</div>
+				</div>
+		 	</li>
+		 	<!-- <li class='{{if eq . "profile"}}active{{end}}'><a href="/profile/complete">profile</a></li> -->
+		 	<li onclick="logout()" style="margin-right: 0;"><a href="#">logout</a></li>
+		 </ul>
+
+		 <form id="login-form" class='{{if ne . "welcome"}}hide{{end}}'>
+			<input id="login-email" type="email" placeholder="email" name="email"></input>
+			<input id="login-pass" type="password" placeholder="password" name="password"></input>
+			<button id="login-button" class="blue-btn" type="button" onclick="login()">Signin</button>
+			<span id="login-error" class="hide">wrong email or password</span>
+		</form>
+
+		<div id="alert" class="hide">
+			<span id="alert-id" class="hide"></span>
+			<div id="alert-wrapper">
+				<span id="alert-text"></span>
+				<span id="alert-dismiss" onclick="Errors.hideAlert()">Dismiss</span>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="wrapper">
+{{end}}

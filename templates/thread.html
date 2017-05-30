@@ -1,0 +1,18 @@
+{{template "header" "thread"}}
+<div id="comments">
+	<div>
+		<span onclick='comments.changeMode("levels")'>one by one</span>
+		<span onclick='comments.changeMode("tree")'>tree</span>
+	</div>
+
+	<div id="comments-wrapper"></div>
+</div>
+
+<script type="text/javascript">
+	$(function(){
+		comments.postId = 0;
+		comments.threadId = window.location.pathname.split("/")[2];
+		comments.fetch();
+	})
+</script>
+{{template "footer"}}

@@ -1,0 +1,14 @@
+IP Address: 107.170.99.115
+
+go 1.5.3
+redis 2.8.12  server: 3.2.0
+postgresql 9.3.10  server: 9.3.13
+locale problem: http://stackoverflow.com/a/28723791
+
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04
+https://www.digitalocean.com/community/tutorials/how-to-back-up-restore-and-migrate-postgresql-databases-with-barman-on-centos-7
+
+sudo apt-get update
+-- sudo apt-get upgrade
+sudo apt-get install build-essential
+

@@ -1,0 +1,98 @@
+{{template "header" "post"}}
+<div id="show-post">
+	<div class="_table_top">Table: <a href="/t/{{.Table}}">{{.Table}}</a></div>
+	<div id="show-post-box"></div>
+	<div class="post-form" id="comment-form" style="display: none">
+		<div class="real-identity identity">
+		<img class="usr" src="/static/img/15.jpg">
+		<img onclick="Posts.beAnonymous()" class="usr-small" src="/static/img/2.jpg">
+	</div>
+
+	<div class="anonymous-identity identity hide">
+		<img class="usr" src="/static/img/2.jpg">
+		<img onclick="Posts.beReal()" class="usr-small" src="/static/img/15.jpg">
+	</div>
+
+	<div class="anonymous-only identity hide">
+		<img class="usr" src="/static/img/15.jpg">
+		<img style="cursor: default;opacity: 0.5" class="usr-small" src="/static/img/2.jpg">
+	</div>
+
+		<form>
+			<input class="identity-flag" type="hidden" name="identity" value="real"></input>
+			<textarea id="comment-area" onclick="Posts.growTextArea('comment-area')" rows="1" name="body" placeholder="Write a comment..."></textarea>
+			<div class="hide" id="comment-area-ctrl">
+				<span class="hint posting-identity-hint"></span>
+				<button class="blue-btn" type="button" onclick="comments.new()">Post</button>
+			</div>
+		</form>
+	</div>
+		
+
+	 <div class="post-form hide" id="reply-form">
+		<div class="real-identity identity">
+			<img class="usr" src="/static/img/15.jpg">
+			<img onclick="Posts.beAnonymous()" class="usr-small" src="/static/img/2.jpg">
+		</div>
+
+		<div class="anonymous-identity identity hide">
+			<img class="usr" src="/static/img/2.jpg">
+			<img onclick="Posts.beReal()" class="usr-small" src="/static/img/15.jpg">
+		</div>
+
+		<div class="anonymous-only identity hide">
+			<img class="usr" src="/static/img/15.jpg">
+			<img style="cursor: default;opacity: 0.5" class="usr-small" src="/static/img/2.jpg">
+		</div>
+
+		<form>
+			<textarea id="reply-area" onclick="Posts.growTextArea('reply-area')" rows="1" name="body" placeholder="Write a reply..."></textarea>
+			<div class="hide" id="reply-area-ctrl">
+				<span class="hint posting-identity-hint"></span>
+				<button class="blue-btn" type="button" onclick="reply()">Post</button>
+			</div>
+		</form>
+	</div>
+
+
+	<div id="comments" style="display: none">
+		<div class="_mode">
+			<span class="_title">Reading Mode:</span>
+			<span class="_ctrl" onclick='comments.changeMode("levels")'>one by one</span>
+			<span class="_ctrl" onclick='comments.changeMode("tree")'>tree</span>
+		</div>
+		<div id="comments-wrapper"></div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(function(){
+		$("#show-post-box").append(Posts.getNode(JSON.parse({{.PostJson}})))
+		$("#comment-form").show();
+		$("#comments").show();
+		comments.postId = window.location.pathname.split("/")[2];
+		comments.fetch();
+		// console.log(comments.postId)
+		// comments.threadId = window.location.pathname.split("/")[2];
+	})
+
+	$(window).click(function() {
+		// parea = $('#post-area').get(0)
+		carea = $('#comment-area').get(0)
+		rarea = $('#reply-area').get(0)
+		// if (parea.value == "") {Posts.shrinkTextArea("post-area");}
+		if (carea.value == "") {Posts.shrinkTextArea("comment-area");}
+		if (rarea.value == "") {$("#reply-form")[0].classList.add("hide")}
+	})
+
+	$('#comment-area').click(function(event){
+	    event.stopPropagation();
+	});
+	$('#reply-area').click(function(event){
+	    event.stopPropagation();
+	});
+	$('.identity').click(function(event){
+	    event.stopPropagation();
+	});
+</script>
+{{template "footer"}}

@@ -1,0 +1,21 @@
+{{template "header" "profile-complete"}}
+<h1>Complete your profile</h1>
+<form enctype="multipart/form-data" action="/users/images" method="post">
+	
+	<div class="group">
+		<img id="image" src="/static/img/12.jpg">
+	</div>
+	<div class="group">
+      <!-- <input type="submit" value="upload" /> -->
+	</div>
+</form>
+
+<script type="text/javascript" src="/static/js/cropper.min.js"></script>
+<script type="text/javascript" src="/static/js/cropping.js"></script>
+
+<style type="text/css">
+    img {
+        max-width: 100%;
+    }
+</style>
+{{template "footer"}}

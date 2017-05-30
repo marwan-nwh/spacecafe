@@ -1,0 +1,374 @@
+{{template "header" "table"}}
+<div>
+	<div class="sideinfo">
+		<div class="basic">
+			
+		<div class="title">{{spaced .Name}}</div>
+		<div class="type">{{.Type}}</div>
+		<div class="desc" id="side-desc">{{if .Description}} {{.Description}} {{else}} <span style="color: #999;">no description</span> {{end}}</div>
+		</div>
+		<div class="membership">
+			<span style="font-weight: bold;
+    float: left;
+    line-height: 1.2;
+    margin-top: -6px;"><span style="font-size: 11px;
+    font-weight: normal;
+    color: #777;">members</span><br><span>{{.Members}}</span></span>
+			<button type="button" id="{{.Name}}-membership" onclick='Tables.toggleMembership("{{.Name}}", this)' class='{{if eq .Role "notmember"}}blue-btn{{else if eq .Role "visitor"}}hide{{else}}black-btn{{end}}'>{{if eq .Role "notmember"}}join{{else if eq .Role "visitor"}}{{else}}member{{end}}</button>
+		</div>
+	</div>
+
+	<div class="content">
+		<div class="tabs-nav">
+			<div class="left">
+			<span class="tab active" id="posts"><a href="#posts" onclick="tab('posts')">{{spaced .Name}}</a></span>
+			<span class="tab" id="about"><a href="#about" onclick="tab('about')">about</a></span>
+			<span class="tab" id="feeds"><a href="#feeds" onclick="tab('feeds')">feeds</a></span>
+			{{if eq .Role "admin" "manager"}}
+			<span class="tab" id="settings"><a href="#settings" onclick="tab('settings')">settings</a></span>
+			<span class="tab" id="admins"><a href="#admins" onclick="tab('admins')">admins</a></span>
+			{{end}}
+			<!-- <span class="tab" id="log"><a href="#log" onclick="tab('log')">log</a></span> -->
+			</div>
+		</div>
+		<div class="tab-view stream" id="posts-view">
+			
+		</div>
+
+		<div class="tab-view hide" id="feeds-view">
+			<div style="color: #666;
+    margin-bottom: 10px;
+    font-size: 13px;
+    background: #f4f4f4;
+    padding: 4px 9px;
+    border-radius: 4px;">
+				feeds are rss/atom sources which get posted automatically on the table 
+			</div>
+			<div id="feeds-list">
+				
+			</div>
+			{{if eq .Role "admin" "manager"}}
+			<form>
+				<div class="group">
+					<label>Add new source</label>
+					<input id="new-feed" type="text" placeholder="source url"></input>
+				</div>
+				<div class="group" style="text-align: right;margin-top: -6px;">
+					<button onclick="addFeed()" type="button" class="blue-btn">Add</button>
+				</div>
+			</form>
+			{{end}}
+		</div>
+		<div class="tab-view hide" id="about-view">
+			{{noescape .About}}
+		</div>
+		<div class="tab-view hide" id="admins-view">
+			<div class="top-hint">
+				every table could have many admins but only one manager (the table creator by default).<br>
+				manager can add and remove admins, or transfer his role to another member.
+				
+			</div>
+			<div id="admins-list">
+				
+			</div>
+			{{if eq .Role "admin" "manager"}}
+			<form id="admins-add" style="margin-top: 15px;">
+				<div class="group">
+					<label>Add admin</label>
+					<!-- <table>
+					  <tr>
+					    <td style="width:85px"><select>
+	  							<option value="admin">Admin</option>
+	  							<option value="manager">Manager</option>
+							</select>
+						</td>
+					    <td style="width:597px">	 -->			    	
+							<input id="new-admin" type="text" placeholder="Enter member email or id"></input>
+
+					    <!-- </td> 
+					  </tr>
+					</table> -->
+					
+				
+				</div>
+
+				<div class="group" style="margin-top: -6px;">
+					<input class="radio" type="radio" name="admin-type" value="admin" checked>Admin
+					<input class="radio" type="radio" name="admin-type" value="manager">Manager <span style="color: #888; font-style: italic;">(transfer your role)</span>
+					<button style="float: right;" onclick="addAdmin(this)" type="button" class="blue-btn">Add</button>
+				</div>
+				
+			</form>
+			{{end}}
+		</div>	
+		<div class="tab-view hide" id="settings-view">
+			<form>
+				<!-- <div class="group">
+					<input class="radio" style="margin-top: 0;" type="radio" name="type" value="public" {{if eq .Type "public"}} checked {{end}}> <strong>Public table</strong>
+					<span class="hint hint-radio">anyone can view, post</span>
+					<input class="radio" type="radio" name="type" value="anonymous" {{if eq .Type "anonymous"}} checked {{end}}> <strong>Anonymous table</strong>
+					<span class="hint hint-radio">anyone can view, post - anonymous posts only</span>
+				</div> -->
+				
+				<div class="group">
+					<label>Name</label>
+					<input name="name" placeholder="name" id="form-name" value="{{spaced .Name}}" disabled="true"></input>
+				</div>
+				
+				<div class="group">
+					<label>Description*</label>
+					<div style="position: relative;" >
+						<textarea name="description" rows="2" placeholder="short description to show up in search results" id="form-description" style="padding-right: 40px;">{{.Description}}</textarea>
+						<span id="description-counter" class="counter">100</span>
+						<!-- <span class="hint">100 char max</span> -->
+						<!-- <span class="hint">short description - 100 char max</span> -->
+					</div>
+				</div>
+				
+				<div class="group">
+					<label>About</label>
+					<textarea name="about" placeholder="about (long description, rules, refrences, etc...)" id="form-about" rows="12">{{.AboutMd}}</textarea>
+					<span class="hint" id="toggle-markdown" style="cursor: pointer;">formatting help</span>
+					<pre class="hide" id="markdown-help">
+only the following formats are supported:
+title: # title
+bold : **bold**
+link : [text](link)
+list : - first
+       - second
+       - third
+				</pre>
+				</div>
+				
+				<div class="group" style="text-align: right;">
+					<div class="error" id="form-errors"></div>
+					<div class="success" style="    display: inline-block;
+    margin-right: 14px;
+    color: green;" id="form-success"></div>
+					<button type="button" class="blue-btn" onclick="updateTable()">Update</button>
+				</div>
+				
+			</form>
+
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	const fetchPostscount = 20;
+	var lastPostCount = fetchPostscount;
+	var currentTable = {{.Name}}
+	
+	autosize($("#form-about"))
+
+	function updateTable(){
+		desc = $("#form-description")[0].value;
+		about = $("#form-about")[0].value;
+		$.post( "/tables/settings", {table: currentTable, description: desc, about: about})
+		  .done(function(data) {
+		  	// console.log(data)
+		  	$("#side-desc")[0].innerHTML = data.description
+		  	$("#about-view")[0].innerHTML = data.about
+		  	$("#form-success")[0].innerHTML = "Updated Successfully";
+		  })
+		  .fail(function(data) {
+		  	$("#form-errors")[0].innerHTML = data.responseJSON.message;
+		  });
+	}
+
+	function tab(t){
+		$(".tab").removeClass("active")
+		$(".tab-view").addClass("hide")
+		$("#"+t).addClass("active")
+		$("#"+t+"-view").removeClass("hide")
+	}
+
+
+	function addAdmin(b){
+		btn = $(b)
+  		btn.prop("disabled", true);
+		id = $("#new-admin")[0].value
+		type = $('input[name=admin-type]:checked').val()
+		$.post( "/tables/admins/new", {id: id, type: type, table: currentTable})
+		  .done(function(data) {
+		  	console.log(data)
+		  })
+		  .fail(function(error) {
+		  	Errors.handle(error);
+		  })
+		  .always(function(){
+		  	btn.prop("disabled", false);
+		  })
+	}
+
+	$(function(){
+		counter = 100 - $("#form-description")[0].value.length;
+		$("#description-counter")[0].innerHTML = counter;
+		if (counter < 0) {
+			$("#description-counter")[0].classList.add("error")
+		}else{
+			$("#description-counter")[0].classList.remove("error")
+		}
+	})
+
+	// $(".membership-btn").hover(function() {
+	//    $(".membership-btn")[0].innerHTML = "leave";
+	// }, function() {
+	//    $(".membership-btn")[0].innerHTML = "member";
+	// });
+
+	// $(".membership-btn").click(function(){
+	// 	$(".membership-btn").addClass("blue-btn")
+	// 	$(".membership-btn")[0].innerHTML = "join"
+	// 	$(".membership-btn").removeClass("black-btn")
+	// 	$(".membership-btn").addClass("join-btn")
+	// 	$(".membership-btn").removeClass("membership-btn")
+	// });
+
+	// $(".join-btn").click(function(){
+	// 	$(".join-btn").addClass("black-btn")
+	// 	$(".join-btn")[0].innerHTML = "member"
+	// 	$(".join-btn").removeClass("blue-btn")
+	// 	$(".join-btn").addClass("membership-btn")
+	// 	$(".join-btn").removeClass("join-btn")
+	// })
+
+
+	// function toggleMembership(table){
+	// 	btn = "#"+table+"-membership"
+	// 	if ($(btn).hasClass("blue-btn")){
+	// 		$(btn).addClass("black-btn")
+	// 		$(btn)[0].innerHTML = "member"
+	// 		$(btn).removeClass("blue-btn")
+	// 		// $(btn).addClass("membership-btn")
+	// 		// $(btn).removeClass("join-btn")
+	// 	}else{
+	// 		$(btn).addClass("blue-btn")
+	// 		$(btn)[0].innerHTML = "join"
+	// 		$(btn).removeClass("black-btn")
+	// 	}
+	// }
+
+
+	$("#form-description").on("keyup paste", function() {
+		counter = 100 - this.value.length;
+		$("#description-counter")[0].innerHTML = counter;
+		if (counter < 0) {
+			$("#description-counter")[0].classList.add("error")
+		}else{
+			$("#description-counter")[0].classList.remove("error")
+		}
+	});
+
+	$("#toggle-markdown").on("click", function() {
+		if ($("#markdown-help")[0].classList.contains("hide")) {
+			$("#markdown-help")[0].classList.remove("hide");
+			this.innerHTML = "hide help";
+		}else{
+			$("#markdown-help")[0].classList.add("hide");
+			this.innerHTML = "formatting help";
+		}
+	});
+
+	
+	$(window).scroll(function(){
+            if  ($(window).scrollTop() == $(document).height() - $(window).height()){
+                  if (lastPostCount == fetchPostscount) {
+                  	loadPosts();
+                  }
+            }
+    }); 
+
+    function loadPosts(){
+    	// if (freezeStream) {return;}
+    	$.post( "/posts", {table: currentTable})
+		  .done(function(data) {
+		  	lastPostCount = data.length;
+		  	posts = '';
+		  	for (var i = 0; i < data.length; i++) {
+		  		posts = posts + Posts.getNode(data[i])	
+		  	}
+		  	$("#posts-view").append(posts)
+		  	// if (!hasScrollbar() && lastPostCount == fetchPostsCount) {loadPosts()}
+		  })
+		  .fail(function(data) {
+		  	// console.log(data)
+		  });
+    }
+    
+    function addFeed(){
+		$.post( "/tables/feeds/new", {url: $("#new-feed")[0].value, table: currentTable})
+		  .done(function(data) {
+		  	$("#feeds-list").append(getFeedNode(data))
+		  	$("#new-feed")[0].value = ""
+		  	})
+		  .fail(function(data) {
+			
+		  });
+	}
+
+    // TODO: add loading icon
+    function loadFeeds(){
+    	$.post( "/tables/feeds", {table: currentTable})
+		  .done(function(data) {
+		  	if (!data) {return;}
+		  	feeds = '';
+		  	for (var i = 0; i < data.length; i++) {
+		  		feeds = feeds + getFeedNode(data[i])	
+		  	}
+		  	$("#feeds-list").append(feeds)
+		  	})
+		  .fail(function(data) {
+			
+		  });
+    }
+
+    function getFeedNode(feed){
+    	return `<div class="feed" id="feed-`+feed.id+`"><div class="title"><span>`+feed.title+`</span></div><div class="url"><span>`+feed.url+`</span></div><div class="ctrl"><span onclick="deleteFeed('`+feed.id.toString()+`')">delete</span></div></div>`;
+    }
+
+    function deleteFeed(id){
+    	$.post( "/tables/feeds/delete", {table: currentTable, feed_id: id})
+		  .done(function(data) {$("#feed-"+id.toString()).remove()})
+		  .fail(function(data) {});
+    }
+
+    function loadAdmins(){
+    	// TODO: not for anonymous tables
+    	$.post( "/tables/admins", {table: currentTable})
+		  .done(function(data) {
+		  	admins = '';
+		  	for (var i = 0; i < data.length; i++) {
+		  		admins = admins + getAdminNode(data[i])	
+		  	}
+		  	$("#admins-list").append(admins)
+		  	})
+		  	// console.log(data)
+		  // })
+		  .fail(function(data) {
+			
+		  });
+    }
+
+    function getAdminNode(admin){
+    	var role = '';
+    	var ctrl_class = '';
+    	if (admin.role != 'admin') {
+    		role = '<div class="role">'+admin.role+'</div>'
+    		ctrl_class = 'hide'
+    	}
+    	if (true) {}
+    	return `<div class="admin" id="admin-`+admin.id+`"><img src='https://s3.amazonaws.com/spacecafe-users/`+admin.id+`_44.png' /><div class="name"><span>`+admin.name+`</span></div>`+role+`<div class="ctrl `+ctrl_class+`"><span onclick="deleteAdmin('`+admin.id.toString()+`')">remove</span></div></div>`;
+    }
+
+    
+
+    $(function() {
+   		loadPosts();
+   		loadFeeds();
+   		loadAdmins();
+	});
+</script>
+
+{{template "footer"}}

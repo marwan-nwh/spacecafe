@@ -1,0 +1,127 @@
+#show-post{
+	margin-top: -9px;
+}
+
+#show-post-box .post{
+	padding: 5px 0px 5px 53px !important;
+	margin-bottom: 0;
+	/* background: #edeff1; */
+	border-radius: 5px;
+}
+
+#show-post-box .post .head{
+	line-height: inherit !important;
+	margin-bottom: 0 !important;
+}
+
+#show-post-box .post .body{
+	margin-top: 0 !important;
+}
+
+#comments{
+	background: #edeff1;
+	border-radius: 5px;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-right: 15px;
+	margin-bottom: 60px;
+	min-height: 80px;
+	position: relative;
+}
+
+#comments .post{
+	padding-left: 20px;
+}
+
+#comments .post .ctrl{line-height: 9px;margin-top: 5px;}
+
+#comments .comment-depth-1 .head{
+	line-height: 12px !important;
+}
+
+#comments .comment-collapsed .body, #comments .comment-collapsed .ctrl, #comments .comment-collapsed .comment-childern{
+	display: none !important;
+}
+
+#comments .comment-collapsed .username, #comments .comment-collapsed .date{
+	color: #666 !important;
+	font-style: italic;
+}
+
+#comments .comments-mode-tree .action-show-replies{
+	display: none;
+}
+
+#comments ._mode{position: absolute;right: 9px;top: 11px;font-size: 13px;}
+
+#comments ._mode ._title{
+	color: #777;
+	margin-right: 2px;
+}
+
+#comments ._mode ._ctrl{
+	background: #ddd;
+	padding: 3px 8px;
+	border-radius: 3px;
+	color: #666;
+}
+
+
+#show-post .post .act{
+	padding-right: 7px;
+	font-size: 10px;
+	color: #666;
+	vertical-align: top;
+	cursor: pointer;
+}
+
+
+.comment-childern .post:first-of-type .head{
+	margin-bottom: 4px;
+}
+
+.comment-childern .comment-wrapper:first-of-type .post{
+	padding-top: 0;
+}
+
+.comment-depth-1 .body{margin-top: 3px !important;}
+
+.comment-wrapper{
+	margin-top: 12px;
+}
+
+.comment-wrapper-depth-1{
+	margin-top: 20px;
+}
+
+.comment-wrapper-depth-1:first-of-type{
+	margin-top: 0;
+}
+
+.comment-childern{
+	margin-left: 20px;
+	padding-left: 5px;
+	border-left: 1px dashed #bfbfbf;
+}
+
+.comment-childern .post .username{
+	font-size: 13px;
+}
+
+
+#comment-form textarea, #reply-form textarea{
+	border: 2px solid #bfc6cd;
+}
+
+
+#comment-form{
+	background: #edeff1;
+	margin: 5px 0;
+	margin-top: 0px;
+	padding: 8px;
+	border-radius: 5px;
+}
+#comment-area-ctrl{
+	margin-bottom: 7px;
+}
+#comment-form form, #reply-form form{padding-left: 52px;}

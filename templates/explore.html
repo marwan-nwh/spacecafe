@@ -1,0 +1,51 @@
+{{template "header" "explore"}}
+
+<div id="explore">
+	<div class="head">
+		<div class="left">
+			<span class="title">explore</span>
+			<span class="hint">quick overview on your tables, and new tables</span>
+		</div>
+		<div class="right">
+				<span class="active">Top</span>
+				<span>Latest</span>
+		</div>
+	</div>
+
+
+	<div id="tables">
+		
+
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	function load(){
+		$.post( "/explore", {sort: "top", page: 0, request_id: "top:0"})
+		  .done(function(data) {
+		  	if (data.request_id != "top:0") {return;}
+		  	_tables = '';
+		  	for (var i = 0; i < data.tables.length; i++) {
+		  		_tables = _tables + Tables.getNode(data.tables[i])	
+		  	}
+		  	$("#tables").append(_tables)
+
+		  	if ($("#tables").height() + $("#tables").offset().top < $("html").height()) {
+		  		load()
+		  	}
+
+		  	// if ($("body")[0].scrollHeight > $("body")[0].clientHeight) {
+		  	// 	load()
+		  	// }
+
+		  })
+		  .fail(function() {
+		  	
+		  });
+	}
+
+	load()
+</script>
+
+{{template "footer"}}

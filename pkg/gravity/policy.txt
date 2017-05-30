@@ -1,0 +1,128 @@
+measures:
+min interval
+average posts per day
+
+
+no date
+- daily until date provided
+
+dates
+if not ordered
+- 30 min
+
+ordered
+decide to update every 30 min, or daily
+if daily
+
+
+30 min
+
+
+period
+does it sleep? is there 6 hours in night they never post at?
+
+
+daily
+if min interval is more than 24 hours
+
+
+
+min period
+how many in the day
+
+
+
+min interval in hours
+average posts per day
+
+
+
+// update feed
+// sechdule next update
+// after 30min
+
+// if feed source prevent us from fetching
+// or failing for many times for any other reason
+
+// dead feed
+
+// weight
+
+// delay
+
+// func frequency() {
+// 	sum := 0
+// 	current := time.Now()
+// 	for _, item := range feed.Items {
+// 		sum = sum + int(current.Sub(*item.PublishedParsed).Hours())
+// 		current = *item.PublishedParsed
+// 	}
+// }
+
+// most viewed
+// possible dublicates
+// updated often?
+// posting every 1000 hours
+
+// fetch only new news
+// feeds like: http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml
+// post on unordered published date
+// should check on this
+
+// sometimes date doesn't exit
+
+// frequency
+// delay
+// listeners
+// weighted delay
+// how many times?
+// what times?
+
+// average fetch time
+// count(average)
+// how much time needed to fetch all feeds?
+
+// on demand
+// every 30 min
+
+// func update(id, url string) bool{
+
+// }
+
+// func fetch() {
+
+// }
+
+// Resource allocation: Given n data sources and a total of M retrievals per period T , the aggregator
+// first decides how many times it will contact individual source O i . This decision should be made based
+// on how quickly new postings appear in each source and how important each source is.
+// the resource allocation is done based on the average posting generation rate and the weight of each source
+
+
+
+
+
+
+
+
+
+
+
+min interval 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
